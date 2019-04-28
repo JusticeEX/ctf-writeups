@@ -1,2 +1,2 @@
 # ctf-writeups
-Writeups from various CTFs
+Writeups for CTF pwn challenges
